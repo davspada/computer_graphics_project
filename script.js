@@ -408,7 +408,7 @@
     const meshProgramInfo = webglUtils.createProgramInfo(gl, [vs, fs]);
 
     //const objHref = 'https://webglfundamentals.org/webgl/resources/models/windmill/windmill.obj';  
-    const objHref = ("res/obj/trueno.obj")
+    const objHref = ("res/obj/AE-863.obj")
     const response = await fetch(objHref);
     const text = await response.text();
     const obj = parseOBJ(text);
