@@ -96,7 +96,7 @@ async function main() {
 
   async function load_models(gl) {
     const objs = [];
-    const garage = await loadOBJAndMTL(gl, "../res/obj/garage.obj");
+    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage.obj");
     const trueno = await loadOBJAndMTL(gl, "../res/obj/AE-863.obj");
     objs.push(garage);
     objs.push(trueno);
@@ -135,7 +135,7 @@ async function main() {
   const carTransform = {
     scale: [0.5, 0.5, 0.5],
     rotation: [0, 0, 0],
-    translation: [5, 0, 0], // Example position relative to the garage
+    translation: [10, -29, 0], //Car position relative to the garage
   };
 
   function setTransformationMatrix(transform) {

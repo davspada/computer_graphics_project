@@ -1,6 +1,6 @@
 # Blender 4.1.1
 # www.blender.org
-mtllib garage.mtl
+mtllib Parking Garage.mtl
 o Cube
 v 100.000000 -0.250000 -100.000000
 v 100.000000 0.250000 -100.000000
