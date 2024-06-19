@@ -135,7 +135,7 @@ async function main() {
   const carTransform = {
     scale: [0.5, 0.5, 0.5],
     rotation: [0, 0, 0],
-    translation: [17, -29, 0], // Example position relative to the garage
+    translation: [5, 0, 0], // Example position relative to the garage
   };
 
   function setTransformationMatrix(transform) {
