@@ -1,25 +1,13 @@
-// main.js
-
-//import { createProgramInfo, setUniforms, setBuffersAndAttributes, drawBufferInfo } from './webgl-utils.js';
-import { parseOBJ } from './obj.js';
-import { parseMTL } from './mtl.js';
-import { create1PixelTexture, createTexture, generateTangents, getGeometriesExtents, degToRad } from './utils.js';
+import { parseOBJ, parseMTL } from './obj_mtl.js';
+import { create1PixelTexture, createTexture, generateTangents, getGeometriesExtents, degToRad, maxVector, minVector } from './utils.js';
 import { initializeCamera } from './camera.js';
 import { vertexShaderSource, fragmentShaderSource } from './shaders.js';
 
-async function main() {
-  const canvas = document.querySelector("#canvas");
-  const gl = canvas.getContext("webgl");
-  if (!gl) {
-    return;
-  }
-
-  const meshProgramInfo = webglUtils.createProgramInfo(gl, [vertexShaderSource, fragmentShaderSource]);
-
-  const objHref = ("res/obj/AE-863.obj");
+async function loadOBJAndMTL(gl, objHref) {
   const response = await fetch(objHref);
   const text = await response.text();
   const obj = parseOBJ(text);
+
   const baseHref = new URL(objHref, window.location.href);
   const matTexts = await Promise.all(obj.materialLibs.map(async filename => {
     const matHref = new URL(filename, baseHref).href;
@@ -96,14 +84,66 @@ async function main() {
     };
   });
 
-  const extents = getGeometriesExtents(obj.geometries);
-  const range = m4.subtractVectors(extents.max, extents.min);
-  const objOffset = m4.scaleVector(m4.addVectors(extents.min, m4.scaleVector(range, 0.5)), -1);
+  return { parts, extents: getGeometriesExtents(obj.geometries) };
+}
+
+async function main() {
+  const canvas = document.querySelector("#canvas");
+  const gl = canvas.getContext("webgl");
+  if (!gl) {
+    return;
+  }
+
+  async function load_models(gl) {
+    const objs = [];
+    const garage = await loadOBJAndMTL(gl, "../res/obj/garage.obj");
+    const trueno = await loadOBJAndMTL(gl, "../res/obj/AE-863.obj");
+    objs.push(garage);
+    objs.push(trueno);
+    return objs;
+  }
+
+  const meshProgramInfo = webglUtils.createProgramInfo(gl, [vertexShaderSource, fragmentShaderSource]);
+
+  const objects = await load_models(gl);
+
+  const allExtents = objects.map(obj => obj.extents);
+  if (allExtents.length === 0) {
+    console.error('No objects were loaded.');
+    return;
+  }
+
+  const totalExtents = {
+    min: allExtents.reduce((min, extents) => minVector(min, extents.min), allExtents[0].min),
+    max: allExtents.reduce((max, extents) => maxVector(max, extents.max), allExtents[0].max),
+  };
+
+  const range = m4.subtractVectors(totalExtents.max, totalExtents.min);
+  const objOffset = m4.scaleVector(m4.addVectors(totalExtents.min, m4.scaleVector(range, 0.5)), -1);
   const cameraTarget = [0, 0, 0];
   const radius = m4.length(range) * 0.5;
   const cameraConfig = initializeCamera(radius);
   const zNear = radius / 100;
   const zFar = radius * 3;
+
+  const garageTransform = {
+    scale: [1.0, 1.0, 1.0],
+    rotation: [0, 0, 0],
+    translation: [0, 0, 0],
+  };
+
+  const carTransform = {
+    scale: [0.5, 0.5, 0.5],
+    rotation: [0, 0, 0],
+    translation: [17, -29, 0], // Example position relative to the garage
+  };
+
+  function setTransformationMatrix(transform) {
+    let matrix = m4.identity();
+    matrix = m4.scale(matrix, ...transform.scale);
+    matrix = m4.translate(matrix, ...transform.translation);
+    return matrix;
+  }
 
   function render(time) {
     time *= 0.001;
@@ -131,16 +171,18 @@ async function main() {
     gl.useProgram(meshProgramInfo.program);
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
 
-    let u_world = m4.identity();
-    u_world = m4.translate(u_world, ...objOffset);
+    objects.forEach((object, index) => {
+      let u_world = m4.identity();
+      const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
+      u_world = setTransformationMatrix(transform);
+      u_world = m4.translate(u_world, ...objOffset);
 
-    for (const { bufferInfo, material } of parts) {
-      webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
-      webglUtils.setUniforms(meshProgramInfo, {
-        u_world,
-      }, material);
-      webglUtils.drawBufferInfo(gl, bufferInfo);
-    }
+      object.parts.forEach(({ bufferInfo, material }) => {
+        webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
+        webglUtils.setUniforms(meshProgramInfo, { u_world }, material);
+        webglUtils.drawBufferInfo(gl, bufferInfo);
+      });
+    });
 
     requestAnimationFrame(render);
   }

@@ -119,3 +119,12 @@ export function isPowerOf2(value) {
   export function degToRad(deg) {
     return deg * Math.PI / 180;
   }
+
+  // Utility functions to compute min and max vectors
+  export function minVector(a, b) {
+    return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.min(a[2], b[2])];
+  }
+
+  export function maxVector(a, b) {
+    return [Math.max(a[0], b[0]), Math.max(a[1], b[1]), Math.max(a[2], b[2])];
+  }
