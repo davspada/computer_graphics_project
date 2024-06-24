@@ -10,6 +10,7 @@ attribute vec4 a_color;
 uniform mat4 u_projection;
 uniform mat4 u_view;
 uniform mat4 u_world;
+uniform mat4 u_textureMatrix;
 uniform vec3 u_viewWorldPosition;
 
 varying vec3 v_normal;
@@ -17,6 +18,7 @@ varying vec3 v_tangent;
 varying vec3 v_surfaceToView;
 varying vec2 v_texcoord;
 varying vec4 v_color;
+varying vec4 v_shadowCoord;
 
 void main() {
   vec4 worldPosition = u_world * a_position;
@@ -28,7 +30,10 @@ void main() {
 
   v_texcoord = a_texcoord;
   v_color = a_color;
+  
+  v_shadowCoord = u_textureMatrix * worldPosition;
 }
+
 `;
 
 export const fragmentShaderSource = `
@@ -39,6 +44,7 @@ varying vec3 v_tangent;
 varying vec3 v_surfaceToView;
 varying vec2 v_texcoord;
 varying vec4 v_color;
+varying vec4 v_shadowCoord;
 
 uniform vec3 diffuse;
 uniform sampler2D diffuseMap;
@@ -51,10 +57,21 @@ uniform sampler2D normalMap;
 uniform float opacity;
 uniform vec3 u_lightDirection;
 uniform vec3 u_ambientLight;
+uniform sampler2D u_projectedTexture;
+uniform float u_bias;
+
+float calculateShadow(vec4 shadowCoord) {
+  vec3 projectedCoord = shadowCoord.xyz / shadowCoord.w;
+  projectedCoord = projectedCoord * 0.5 + 0.5;
+  float closestDepth = texture2D(u_projectedTexture, projectedCoord.xy).r;
+  float currentDepth = projectedCoord.z;
+  float shadow = currentDepth - u_bias > closestDepth ? 0.5 : 1.0;
+  return shadow;
+}
 
 void main () {
-  vec3 normal = normalize(v_normal) * ( float( gl_FrontFacing ) * 2.0 - 1.0 );
-  vec3 tangent = normalize(v_tangent) * ( float( gl_FrontFacing ) * 2.0 - 1.0 );
+  vec3 normal = normalize(v_normal) * (float(gl_FrontFacing) * 2.0 - 1.0);
+  vec3 tangent = normalize(v_tangent) * (float(gl_FrontFacing) * 2.0 - 1.0);
   vec3 bitangent = normalize(cross(normal, tangent));
 
   mat3 tbn = mat3(tangent, bitangent, normal);
@@ -73,11 +90,36 @@ void main () {
   vec3 effectiveDiffuse = diffuse * diffuseMapColor.rgb * v_color.rgb;
   float effectiveOpacity = opacity * diffuseMapColor.a * v_color.a;
 
+  float shadow = calculateShadow(v_shadowCoord);
+  
   gl_FragColor = vec4(
-      emissive +
-      ambient * u_ambientLight +
-      effectiveDiffuse * fakeLight +
-      effectiveSpecular * pow(specularLight, shininess),
-      effectiveOpacity);
+    emissive +
+    ambient * u_ambientLight +
+    effectiveDiffuse * fakeLight * shadow +
+    effectiveSpecular * pow(specularLight, shininess),
+    effectiveOpacity
+  );
+}
+
+`;
+
+export const vertexShadow = `
+attribute vec4 a_position;
+
+uniform mat4 u_projection;
+uniform mat4 u_view;
+uniform mat4 u_world;
+
+void main() {
+  gl_Position = u_projection * u_view * u_world * a_position;
 }
 `;
+
+export const fragmentShadow = `
+precision mediump float;
+
+uniform vec4 u_color;
+void main() {
+  gl_FragColor = u_color;
+}
+`

@@ -1,7 +1,7 @@
 import { parseOBJ, parseMTL } from './obj_mtl.js';
 import { create1PixelTexture, createTexture, generateTangents, getGeometriesExtents, degToRad, maxVector, minVector } from './utils.js';
 import { initializeCamera } from './camera.js';
-import { vertexShaderSource, fragmentShaderSource } from './shaders.js';
+import { vertexShaderSource, fragmentShaderSource, vertexShadow, fragmentShadow } from './shaders.js';
 
 async function loadOBJAndMTL(gl, objHref) {
   const response = await fetch(objHref);
@@ -87,12 +87,20 @@ async function loadOBJAndMTL(gl, objHref) {
   return { parts, extents: getGeometriesExtents(obj.geometries) };
 }
 
+
 async function main() {
   const canvas = document.querySelector("#canvas");
   const gl = canvas.getContext("webgl");
   if (!gl) {
     return;
   }
+
+  const ext = gl.getExtension('WEBGL_depth_texture');
+  if (!ext) {
+    return alert('need WEBGL_depth_texture');  // eslint-disable-line
+  }
+
+
 
   async function load_models(gl) {
     const objs = [];
@@ -104,6 +112,85 @@ async function main() {
   }
 
   const meshProgramInfo = webglUtils.createProgramInfo(gl, [vertexShaderSource, fragmentShaderSource]);
+  const colorProgramInfo = webglUtils.createProgramInfo(gl, [vertexShadow, fragmentShadow]);
+
+  const depthTexture = gl.createTexture();
+  const depthTextureSize = 512;
+  gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+  gl.texImage2D(
+      gl.TEXTURE_2D,      // target
+      0,                  // mip level
+      gl.DEPTH_COMPONENT, // internal format
+      depthTextureSize,   // width
+      depthTextureSize,   // height
+      0,                  // border
+      gl.DEPTH_COMPONENT, // format
+      gl.UNSIGNED_INT,    // type
+      null);              // data
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  const depthFramebuffer = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
+  gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,       // target
+      gl.DEPTH_ATTACHMENT,  // attachment point
+      gl.TEXTURE_2D,        // texture target
+      depthTexture,         // texture
+      0);                   // mip level
+
+  // create a color texture of the same size as the depth texture
+  // see article why this is needed_
+  const unusedTexture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, unusedTexture);
+  gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      depthTextureSize,
+      depthTextureSize,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      null,
+  );
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  // attach it to the framebuffer
+  gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,        // target
+      gl.COLOR_ATTACHMENT0,  // attachment point
+      gl.TEXTURE_2D,         // texture target
+      unusedTexture,         // texture
+      0);                    // mip level
+
+
+      const settings = {
+        cameraX: 6,
+        cameraY: 5,
+        posX: 2.5,
+        posY: 4.8,
+        posZ: 4.3,
+        targetX: 2.5,
+        targetY: 0,
+        targetZ: 3.5,
+        projWidth: 1,
+        projHeight: 1,
+        perspective: true,
+        fieldOfView: 120,
+        bias: -0.006,
+      };
+    
+      const gui = new dat.GUI();
+      gui.add(settings, 'posX', -10, 10).name('Light X');
+      gui.add(settings, 'posY', -10, 10).name('Light Y');
+      gui.add(settings, 'posZ', -10, 10).name('Light Z');
+
 
   const objects = await load_models(gl);
 
@@ -147,46 +234,106 @@ async function main() {
 
   function render(time) {
     time *= 0.001;
-
+  
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.enable(gl.DEPTH_TEST);
-
-    const fieldOfViewRadians = degToRad(60);
-    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-
-    const up = [0, 1, 0];
-    const cameraPosition = cameraConfig.getCameraPosition();
-    const camera = m4.lookAt(cameraPosition, cameraTarget, up);
-    const view = m4.inverse(camera);
-
-    const sharedUniforms = {
-      u_lightDirection: m4.normalize([-1, 3, 5]),
-      u_view: view,
-      u_projection: projection,
-      u_viewWorldPosition: cameraPosition,
-    };
-
-    gl.useProgram(meshProgramInfo.program);
-    webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
-
+    gl.enable(gl.CULL_FACE);
+  
+    // First draw from the POV of the light
+    const lightWorldMatrix = m4.lookAt(
+      [settings.posX, settings.posY, settings.posZ],          // position
+      [settings.targetX, settings.targetY, settings.targetZ], // target
+      [0, 1, 0],                                              // up
+    );
+  
+    const lightProjectionMatrix = settings.perspective
+      ? m4.perspective(
+          degToRad(settings.fieldOfView),
+          settings.projWidth / settings.projHeight,
+          0.5,  // near
+          10)   // far
+      : m4.orthographic(
+          -settings.projWidth / 2,   // left
+          settings.projWidth / 2,    // right
+          -settings.projHeight / 2,  // bottom
+          settings.projHeight / 2,   // top
+          0.5,                       // near
+          10);                       // far
+  
+    // Draw to the depth texture
+    gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
+    gl.viewport(0, 0, depthTextureSize, depthTextureSize);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
+    gl.useProgram(colorProgramInfo.program);
+    webglUtils.setUniforms(colorProgramInfo, {
+      u_view: m4.inverse(lightWorldMatrix),
+      u_projection: lightProjectionMatrix,
+    });
+  
     objects.forEach((object, index) => {
       let u_world = m4.identity();
       const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
       u_world = setTransformationMatrix(transform);
       u_world = m4.translate(u_world, ...objOffset);
-
+  
+      object.parts.forEach(({ bufferInfo }) => {
+        webglUtils.setBuffersAndAttributes(gl, colorProgramInfo, bufferInfo);
+        webglUtils.setUniforms(colorProgramInfo, { u_world });
+        webglUtils.drawBufferInfo(gl, bufferInfo);
+      });
+    });
+  
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
+    // Prepare to draw the scene with the depth texture
+    const fieldOfViewRadians = degToRad(60);
+    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
+  
+    const up = [0, 1, 0];
+    const cameraPosition = cameraConfig.getCameraPosition();
+    const camera = m4.lookAt(cameraPosition, cameraTarget, up);
+    const view = m4.inverse(camera);
+  
+    let textureMatrix = m4.identity();
+    textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
+    textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
+    textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
+    textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
+  
+    gl.useProgram(meshProgramInfo.program);
+    const sharedUniforms = {
+      u_view: view,
+      u_projection: projection,
+      u_viewWorldPosition: cameraPosition,
+      u_textureMatrix: textureMatrix,
+      u_projectedTexture: depthTexture,
+      u_lightWorldPosition: [settings.posX, settings.posY, settings.posZ],
+      u_bias: settings.bias,
+    };
+  
+    webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
+  
+    objects.forEach((object, index) => {
+      let u_world = m4.identity();
+      const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
+      u_world = setTransformationMatrix(transform);
+      u_world = m4.translate(u_world, ...objOffset);
+  
       object.parts.forEach(({ bufferInfo, material }) => {
         webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
         webglUtils.setUniforms(meshProgramInfo, { u_world }, material);
         webglUtils.drawBufferInfo(gl, bufferInfo);
       });
     });
-
+  
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
-}
-
+}  
 main();
