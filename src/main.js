@@ -87,7 +87,6 @@ async function loadOBJAndMTL(gl, objHref) {
   return { parts, extents: getGeometriesExtents(obj.geometries) };
 }
 
-
 async function main() {
   const canvas = document.querySelector("#canvas");
   const gl = canvas.getContext("webgl");
@@ -100,12 +99,10 @@ async function main() {
     return alert('need WEBGL_depth_texture');  // eslint-disable-line
   }
 
-
-
   async function load_models(gl) {
     const objs = [];
     const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage.obj");
-    const trueno = await loadOBJAndMTL(gl, "../res/obj/AE-863.obj");
+    const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno.obj");
     objs.push(garage);
     objs.push(trueno);
     return objs;
@@ -141,8 +138,6 @@ async function main() {
       depthTexture,         // texture
       0);                   // mip level
 
-  // create a color texture of the same size as the depth texture
-  // see article why this is needed_
   const unusedTexture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, unusedTexture);
   gl.texImage2D(
@@ -161,7 +156,6 @@ async function main() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-  // attach it to the framebuffer
   gl.framebufferTexture2D(
       gl.FRAMEBUFFER,        // target
       gl.COLOR_ATTACHMENT0,  // attachment point
@@ -169,28 +163,29 @@ async function main() {
       unusedTexture,         // texture
       0);                    // mip level
 
+  const settings = {
+    cameraX: 6,
+    cameraY: 5,
+    posX: 2.5,
+    posY: 4.8,
+    posZ: 4.3,
+    targetX: 2.5,
+    targetY: 0,
+    targetZ: 3.5,
+    projWidth: 1,
+    projHeight: 1,
+    perspective: true,
+    fieldOfView: 120,
+    bias: -0.006,
+  };
 
-      const settings = {
-        cameraX: 6,
-        cameraY: 5,
-        posX: 2.5,
-        posY: 4.8,
-        posZ: 4.3,
-        targetX: 2.5,
-        targetY: 0,
-        targetZ: 3.5,
-        projWidth: 1,
-        projHeight: 1,
-        perspective: true,
-        fieldOfView: 120,
-        bias: -0.006,
-      };
-    
-      const gui = new dat.GUI();
-      gui.add(settings, 'posX', -10, 10).name('Light X');
-      gui.add(settings, 'posY', -10, 10).name('Light Y');
-      gui.add(settings, 'posZ', -10, 10).name('Light Z');
-
+  const gui = new dat.GUI();
+  gui.add(settings, 'posX', -10, 10).name('Light X');
+  gui.add(settings, 'posY', -10, 10).name('Light Y');
+  gui.add(settings, 'posZ', -10, 10).name('Light Z');
+  gui.add(settings, 'targetX', -10, 10).name('Target X');
+  gui.add(settings, 'targetY', -10, 10).name('Target Y');
+  gui.add(settings, 'targetZ', -10, 10).name('Target Z');
 
   const objects = await load_models(gl);
 
@@ -220,33 +215,36 @@ async function main() {
   };
 
   const carTransform = {
-    scale: [0.5, 0.5, 0.5],
+    scale: [0.25, 0.25, 0.25],
     rotation: [0, 0, 0],
-    translation: [10, -29, 0], //Car position relative to the garage
+    translation: [0, 0, -20], // Car position relative to the garage
   };
 
   function setTransformationMatrix(transform) {
     let matrix = m4.identity();
-    matrix = m4.scale(matrix, ...transform.scale);
     matrix = m4.translate(matrix, ...transform.translation);
+    matrix = m4.xRotate(matrix, transform.rotation[0]);
+    matrix = m4.yRotate(matrix, transform.rotation[1]);
+    matrix = m4.zRotate(matrix, transform.rotation[2]);
+    matrix = m4.scale(matrix, ...transform.scale);
     return matrix;
   }
 
   function render(time) {
     time *= 0.001;
-  
+
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
-  
+
     // First draw from the POV of the light
     const lightWorldMatrix = m4.lookAt(
       [settings.posX, settings.posY, settings.posZ],          // position
       [settings.targetX, settings.targetY, settings.targetZ], // target
       [0, 1, 0],                                              // up
     );
-  
+
     const lightProjectionMatrix = settings.perspective
       ? m4.perspective(
           degToRad(settings.fieldOfView),
@@ -260,52 +258,54 @@ async function main() {
           settings.projHeight / 2,   // top
           0.5,                       // near
           10);                       // far
-  
+
     // Draw to the depth texture
     gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
     gl.viewport(0, 0, depthTextureSize, depthTextureSize);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  
+
     gl.useProgram(colorProgramInfo.program);
     webglUtils.setUniforms(colorProgramInfo, {
       u_view: m4.inverse(lightWorldMatrix),
       u_projection: lightProjectionMatrix,
     });
-  
+
     objects.forEach((object, index) => {
       let u_world = m4.identity();
       const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
       u_world = setTransformationMatrix(transform);
-      u_world = m4.translate(u_world, ...objOffset);
-  
+      if (index === 0) {
+        u_world = m4.translate(u_world, ...objOffset); // Only apply objOffset to the garage
+      }
+
       object.parts.forEach(({ bufferInfo }) => {
         webglUtils.setBuffersAndAttributes(gl, colorProgramInfo, bufferInfo);
         webglUtils.setUniforms(colorProgramInfo, { u_world });
         webglUtils.drawBufferInfo(gl, bufferInfo);
       });
     });
-  
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  
+
     // Prepare to draw the scene with the depth texture
     const fieldOfViewRadians = degToRad(60);
     const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const projection = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-  
+
     const up = [0, 1, 0];
     const cameraPosition = cameraConfig.getCameraPosition();
     const camera = m4.lookAt(cameraPosition, cameraTarget, up);
     const view = m4.inverse(camera);
-  
+
     let textureMatrix = m4.identity();
     textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
     textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
     textureMatrix = m4.multiply(textureMatrix, lightProjectionMatrix);
     textureMatrix = m4.multiply(textureMatrix, m4.inverse(lightWorldMatrix));
-  
+
     gl.useProgram(meshProgramInfo.program);
     const sharedUniforms = {
       u_view: view,
@@ -316,24 +316,26 @@ async function main() {
       u_lightWorldPosition: [settings.posX, settings.posY, settings.posZ],
       u_bias: settings.bias,
     };
-  
+
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
-  
+
     objects.forEach((object, index) => {
       let u_world = m4.identity();
       const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
       u_world = setTransformationMatrix(transform);
-      u_world = m4.translate(u_world, ...objOffset);
-  
+      if (index === 0) {
+        u_world = m4.translate(u_world, ...objOffset); // Only apply objOffset to the garage
+      }
+
       object.parts.forEach(({ bufferInfo, material }) => {
         webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
         webglUtils.setUniforms(meshProgramInfo, { u_world }, material);
         webglUtils.drawBufferInfo(gl, bufferInfo);
       });
     });
-  
+
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
-}  
+}
 main();
