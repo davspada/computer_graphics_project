@@ -99,11 +99,40 @@ async function main() {
     return alert('need WEBGL_depth_texture');  // eslint-disable-line
   }
 
+  const cubeLinesBufferInfo = webglUtils.createBufferInfoFromArrays(gl, {
+    position: [
+      -1, -1, -1,
+       1, -1, -1,
+      -1,  1, -1,
+       1,  1, -1,
+      -1, -1,  1,
+       1, -1,  1,
+      -1,  1,  1,
+       1,  1,  1,
+    ],
+    indices: [
+      0, 1,
+      1, 3,
+      3, 2,
+      2, 0,
+
+      4, 5,
+      5, 7,
+      7, 6,
+      6, 4,
+
+      0, 4,
+      1, 5,
+      3, 7,
+      2, 6,
+    ],
+  });
+
   async function load_models(gl) {
     const objs = [];
-    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage.obj");
+    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage.obj")
     const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno.obj");
-    objs.push(garage);
+    objs.push(garage)
     objs.push(trueno);
     return objs;
   }
@@ -172,10 +201,10 @@ async function main() {
     targetX: 2.5,
     targetY: 0,
     targetZ: 3.5,
-    projWidth: 1,
-    projHeight: 1,
-    perspective: true,
-    fieldOfView: 120,
+    projWidth: 10,
+    projHeight: 10,
+    perspective: false,
+    fieldOfView: 20,
     bias: -0.006,
   };
 
@@ -186,6 +215,9 @@ async function main() {
   gui.add(settings, 'targetX', -10, 10).name('Target X');
   gui.add(settings, 'targetY', -10, 10).name('Target Y');
   gui.add(settings, 'targetZ', -10, 10).name('Target Z');
+  gui.add(settings, 'projWidth', 1, 50).name('Proj Width');
+  gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
+  gui.add(settings, 'bias', -0.01, 0.01).name('Shadow Bias');
 
   const objects = await load_models(gl);
 
@@ -208,16 +240,10 @@ async function main() {
   const zNear = radius / 100;
   const zFar = radius * 3;
 
-  const garageTransform = {
-    scale: [1.0, 1.0, 1.0],
-    rotation: [0, 0, 0],
-    translation: [0, 0, 0],
-  };
-
   const carTransform = {
     scale: [0.25, 0.25, 0.25],
     rotation: [0, 0, 0],
-    translation: [0, 0, -20], // Car position relative to the garage
+    translation: [0, 0, 0],
   };
 
   function setTransformationMatrix(transform) {
@@ -250,14 +276,14 @@ async function main() {
           degToRad(settings.fieldOfView),
           settings.projWidth / settings.projHeight,
           0.5,  // near
-          10)   // far
+          50)   // far
       : m4.orthographic(
           -settings.projWidth / 2,   // left
           settings.projWidth / 2,    // right
           -settings.projHeight / 2,  // bottom
           settings.projHeight / 2,   // top
           0.5,                       // near
-          10);                       // far
+          50);                       // far
 
     // Draw to the depth texture
     gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer);
@@ -270,13 +296,10 @@ async function main() {
       u_projection: lightProjectionMatrix,
     });
 
-    objects.forEach((object, index) => {
+    objects.forEach((object) => {
       let u_world = m4.identity();
-      const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
-      u_world = setTransformationMatrix(transform);
-      if (index === 0) {
-        u_world = m4.translate(u_world, ...objOffset); // Only apply objOffset to the garage
-      }
+      u_world = setTransformationMatrix(carTransform);
+      u_world = m4.translate(u_world, ...objOffset);
 
       object.parts.forEach(({ bufferInfo }) => {
         webglUtils.setBuffersAndAttributes(gl, colorProgramInfo, bufferInfo);
@@ -319,13 +342,10 @@ async function main() {
 
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
 
-    objects.forEach((object, index) => {
+    objects.forEach((object) => {
       let u_world = m4.identity();
-      const transform = index === 0 ? garageTransform : carTransform; // Use appropriate transform
-      u_world = setTransformationMatrix(transform);
-      if (index === 0) {
-        u_world = m4.translate(u_world, ...objOffset); // Only apply objOffset to the garage
-      }
+      u_world = setTransformationMatrix(carTransform);
+      u_world = m4.translate(u_world, ...objOffset);
 
       object.parts.forEach(({ bufferInfo, material }) => {
         webglUtils.setBuffersAndAttributes(gl, meshProgramInfo, bufferInfo);
@@ -334,6 +354,31 @@ async function main() {
       });
     });
 
+    {
+      const viewMatrix = m4.inverse(camera);
+
+      gl.useProgram(colorProgramInfo.program);
+
+      // Setup all the needed attributes.
+      webglUtils.setBuffersAndAttributes(gl, colorProgramInfo, cubeLinesBufferInfo);
+
+      // scale the cube in Z so it's really long
+      // to represent the texture is being projected to
+      // infinity
+      const mat = m4.multiply(
+          lightWorldMatrix, m4.inverse(lightProjectionMatrix));
+
+      // Set the uniforms we just computed
+      webglUtils.setUniforms(colorProgramInfo, {
+        u_color: [1, 1, 1, 1],
+        u_view: viewMatrix,
+        u_projection: projection,
+        u_world: mat,
+      });
+
+      // calls gl.drawArrays or gl.drawElements
+      webglUtils.drawBufferInfo(gl, cubeLinesBufferInfo, gl.LINES);
+    }
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
