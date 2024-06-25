@@ -5,6 +5,8 @@ export function initializeCamera(radius) {
   const cameraSpeedMouse = 0.005;
   const cameraSpeedKeyboard = 0.25;
   const zoomSpeed = 0.25;
+  const cameraSpeedGamepad = 0.01;
+  const zoomSpeedGamepad = 0.05;
 
   let isDragging = false;
   let lastX = 0;
@@ -14,7 +16,6 @@ export function initializeCamera(radius) {
   function updateCamera() {
     cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
     cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
-    console.log(cameraPosition)
   }
 
   function onMouseDown(event) {
@@ -102,6 +103,30 @@ export function initializeCamera(radius) {
     updateCamera();
   }
 
+  function updateGamepad() {
+    const gamepads = navigator.getGamepads();
+    if (gamepads[0]) {
+      const gp = gamepads[0];
+      const leftStickX = gp.axes[0];
+      const leftStickY = gp.axes[1];
+      const rightStickX = gp.axes[2];
+      const rightStickY = gp.axes[3];
+      const leftTrigger = gp.buttons[6].value;
+      const rightTrigger = gp.buttons[7].value;
+
+      // Camera rotation
+      cameraAngleRadians += leftStickX * cameraSpeedGamepad;
+      cameraPosition[1] -= leftStickY * cameraSpeedGamepad;
+
+      // Camera zoom
+      cameraRadius -= (rightTrigger - leftTrigger) * zoomSpeedGamepad;
+
+      updateCamera();
+    }
+
+    requestAnimationFrame(updateGamepad);
+  }
+
   document.addEventListener('mousedown', onMouseDown);
   document.addEventListener('mouseup', onMouseUp);
   document.addEventListener('mousemove', onMouseMove);
@@ -110,6 +135,8 @@ export function initializeCamera(radius) {
   document.addEventListener('touchmove', onTouchMove);
   document.addEventListener('touchend', onTouchEnd);
   document.addEventListener('keydown', onKeyDown);
+
+  requestAnimationFrame(updateGamepad);
 
   return {
     getCameraPosition: () => cameraPosition,
