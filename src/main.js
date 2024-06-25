@@ -96,7 +96,7 @@ async function main() {
 
   const ext = gl.getExtension('WEBGL_depth_texture');
   if (!ext) {
-    return alert('need WEBGL_depth_texture');  // eslint-disable-line
+    return alert('need WEBGL_depth_texture');
   }
 
   //buffer for the frustum
@@ -131,7 +131,7 @@ async function main() {
 
   async function load_models(gl) {
     const objs = [];
-    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage4.obj")
+    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage2.obj")
     const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno.obj");
     objs.push(garage)
     objs.push(trueno);
@@ -199,29 +199,37 @@ async function main() {
     posX: 2.5,
     posY: 4.8,
     posZ: 4.3,
-    targetX: 2.5,
-    targetY: 0,
-    targetZ: 3.5,
+    //targetX: 2.5,
+    //targetY: 0,
+    //targetZ: 3.5,
     projWidth: 10,
     projHeight: 10,
-    perspective: false,
+    //perspective: false,
     fieldOfView: 20,
-    bias: -0.006,
-    alphaEnable: false
+    bias: -0.004,
+    alphaEnable: false,
+    shadows: true,
+    viewFrustum: false
   };
 
   const gui = new dat.GUI();
   gui.add(settings, 'posX', -50, 50).name('Light X');
   gui.add(settings, 'posY', -50, 50).name('Light Y');
   gui.add(settings, 'posZ', -50, 50).name('Light Z');
-  gui.add(settings, 'targetX', -50, 50).name('Target X');
-  gui.add(settings, 'targetY', -50, 50).name('Target Y');
-  gui.add(settings, 'targetZ', -50, 50).name('Target Z');
+  //gui.add(settings, 'targetX', -50, 50).name('Target X');
+  //gui.add(settings, 'targetY', -50, 50).name('Target Y');
+  //gui.add(settings, 'targetZ', -50, 50).name('Target Z');
   gui.add(settings, 'projWidth', 1, 50).name('Proj Width');
   gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
-  gui.add(settings, 'bias', -0.01, 0.01).name('Shadow Bias');
+  gui.add(settings, 'bias', 1, 0.004).name('Shadow Bias');
   gui.add(settings, 'alphaEnable').onChange(function (value) {
     settings.alphaEnable = value;
+  }); 
+  gui.add(settings, 'shadows').onChange(function (value) {
+    settings.shadows = value;
+  });
+  gui.add(settings, 'viewFrustum').onChange(function (value) {
+    settings.viewFrustum = value;
   }); 
 
   const objects = await load_models(gl);
@@ -246,7 +254,7 @@ async function main() {
   const zFar = radius * 3;
 
   const carTransform = {
-    scale: [0.25, 0.25, 0.25],
+    scale: [1,1,1],
     rotation: [0, 0, 0],
     translation: [0, 0, 0],
   };
@@ -280,7 +288,7 @@ async function main() {
     // First draw from the POV of the light
     /*const lightWorldMatrix = m4.lookAt(
       [settings.posX, settings.posY, settings.posZ],          // position
-      [settings.targetX, settings.targetY, settings.targetZ], // target
+      [0,0,0], // target
       [0, 1, 0],                                              // up
     );*/
 
@@ -341,6 +349,7 @@ async function main() {
     const camera = m4.lookAt(cameraPosition, cameraTarget, up);
     const view = m4.inverse(camera);
 
+    //allows to "translate" object coordinates for the shadows
     let textureMatrix = m4.identity();
     textureMatrix = m4.translate(textureMatrix, 0.5, 0.5, 0.5);
     textureMatrix = m4.scale(textureMatrix, 0.5, 0.5, 0.5);
@@ -356,6 +365,7 @@ async function main() {
       u_projectedTexture: depthTexture,
       u_lightWorldPosition: [settings.posX, settings.posY, settings.posZ],
       u_bias: settings.bias,
+      shadows: settings.shadows
     };
 
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
@@ -372,7 +382,7 @@ async function main() {
       });
     });
 
-    {
+    if(settings.viewFrustum){
       const viewMatrix = m4.inverse(camera);
 
       gl.useProgram(colorProgramInfo.program);

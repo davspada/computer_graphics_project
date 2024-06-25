@@ -8,8 +8,8 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 illum 2
-map_Kd textures/truenotex/badges.dds
-map_d textures/truenotex/badges.dds
+map_Kd textures/truenotex/badges.png
+map_d textures/truenotex/badges.png
 
 newmtl AE86.BlackGloss
 Ns 1000.000000
@@ -108,8 +108,8 @@ Ks 0.500000 0.500000 0.500000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/Clock.dds
-map_Ke textures/truenotex/Clock.dds
+map_Kd textures/truenotex/Clock.png
+map_Ke textures/truenotex/Clock.png
 
 newmtl AE86.Cupholder
 Ns 250.000000
@@ -119,7 +119,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/cupholder.dds
+map_Kd textures/truenotex/cupholder.png
 
 newmtl AE86.DarkGray
 Ns 250.000000
@@ -138,8 +138,8 @@ Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 illum 3
-map_Kd textures/truenotex/coupe_engine_s.dds
-map_d textures/truenotex/coupe_engine_s.dds
+map_Kd textures/truenotex/coupe_engine_s.png
+map_d textures/truenotex/coupe_engine_s.png
 
 newmtl AE86.Foglight
 Ns 360.000000
@@ -199,7 +199,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/interiors_details.dds
+map_Kd textures/truenotex/interiors_details.png
 
 newmtl AE86.Interiorlamp
 Ns 250.000000
@@ -299,7 +299,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/seat.dds
+map_Kd textures/truenotex/seat.png
 
 newmtl AE86.Signal.L
 Ns 360.000000
@@ -339,7 +339,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/Steer.dds
+map_Kd textures/truenotex/Steer.png
 
 newmtl AE86.Taillight
 Ns 360.000000
@@ -379,7 +379,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/interiors_details.dds
+map_Kd textures/truenotex/interiors_details.png
 
 newmtl AE86.Window
 Ns 1000.000000
@@ -399,7 +399,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd textures/truenotex/wood.dds
+map_Kd textures/truenotex/wood.png
 
 newmtl engine_corolla2
 Ns 250.000000

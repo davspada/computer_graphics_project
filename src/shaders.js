@@ -60,6 +60,9 @@ uniform vec3 u_ambientLight;
 uniform sampler2D u_projectedTexture;
 uniform float u_bias;
 
+//shadow boolean
+uniform int shadows;
+
 float calculateShadow(vec4 shadowCoord) {
   vec3 projectedCoord = shadowCoord.xyz / shadowCoord.w;
   float closestDepth = texture2D(u_projectedTexture, projectedCoord.xy).r;
@@ -91,6 +94,7 @@ void main () {
 
   float shadow = calculateShadow(v_shadowCoord);
   
+  if(shadows == 1){
   gl_FragColor = vec4(
     emissive +
     ambient * u_ambientLight +
@@ -98,6 +102,15 @@ void main () {
     effectiveSpecular * pow(specularLight, shininess) * shadow,
     effectiveOpacity
   );
+  }else{
+    gl_FragColor = vec4(
+    emissive +
+    ambient * u_ambientLight +
+    effectiveDiffuse * fakeLight +
+    effectiveSpecular * pow(specularLight, shininess) ,
+    effectiveOpacity
+  );
+  }
 }
 
 `;
