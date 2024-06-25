@@ -5,8 +5,10 @@ export function initializeCamera(radius) {
   const cameraSpeedMouse = 0.005;
   const cameraSpeedKeyboard = 0.25;
   const zoomSpeed = 0.25;
-  const cameraSpeedGamepad = 0.01;
-  const zoomSpeedGamepad = 0.05;
+  const cameraSpeedGamepad = 0.05;
+  const zoomSpeedGamepad = 0.25;
+  let internalCamera = false; // Boolean flag to control the mode
+  const specificPosition = [-0.3218847370131798, 2.25, -3.9362626986652223]; // Example specific position
 
   let isDragging = false;
   let lastX = 0;
@@ -14,8 +16,15 @@ export function initializeCamera(radius) {
   let initialPinchDistance = null;
 
   function updateCamera() {
-    cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
-    cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
+    if (internalCamera) {
+      cameraPosition[0] = cameraPosition[0];
+      cameraPosition[1] = specificPosition[1];
+      cameraPosition[2] = specificPosition[2];
+    } else {
+      cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
+      cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
+    }
+    console.log(cameraPosition);
   }
 
   function onMouseDown(event) {
@@ -33,7 +42,9 @@ export function initializeCamera(radius) {
       const deltaX = event.clientX - lastX;
       const deltaY = event.clientY - lastY;
       cameraAngleRadians -= deltaX * cameraSpeedMouse;
-      cameraPosition[1] -= deltaY * zoomSpeed;
+      if (!internalCamera) {
+        cameraPosition[1] -= deltaY * zoomSpeed;
+      }
       lastX = event.clientX;
       lastY = event.clientY;
       updateCamera();
@@ -67,7 +78,9 @@ export function initializeCamera(radius) {
       const deltaX = event.touches[0].clientX - lastX;
       const deltaY = event.touches[0].clientY - lastY;
       cameraAngleRadians -= deltaX * cameraSpeedMouse;
-      cameraPosition[1] -= deltaY * zoomSpeed;
+      if (!internalCamera) {
+        cameraPosition[1] -= deltaY * zoomSpeed;
+      }
       lastX = event.touches[0].clientX;
       lastY = event.touches[0].clientY;
       updateCamera();
@@ -116,7 +129,9 @@ export function initializeCamera(radius) {
 
       // Camera rotation
       cameraAngleRadians += leftStickX * cameraSpeedGamepad;
-      cameraPosition[1] -= leftStickY * cameraSpeedGamepad;
+      if (!internalCamera) {
+        cameraPosition[1] -= leftStickY * cameraSpeedGamepad;
+      }
 
       // Camera zoom
       cameraRadius -= (rightTrigger - leftTrigger) * zoomSpeedGamepad;
@@ -125,6 +140,14 @@ export function initializeCamera(radius) {
     }
 
     requestAnimationFrame(updateGamepad);
+  }
+
+  function setSpecificPosition() {
+    cameraPosition[0] = specificPosition[0];
+    cameraPosition[1] = specificPosition[1];
+    cameraPosition[2] = specificPosition[2];
+    cameraRadius = specificPosition[2];
+    updateCamera();
   }
 
   document.addEventListener('mousedown', onMouseDown);
@@ -142,5 +165,6 @@ export function initializeCamera(radius) {
     getCameraPosition: () => cameraPosition,
     getCameraAngleRadians: () => cameraAngleRadians,
     getCameraRadius: () => cameraRadius,
+    setInternalCamera: (value) => { internalCamera = value; if (internalCamera) setSpecificPosition(); }
   };
 }

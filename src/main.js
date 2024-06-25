@@ -99,7 +99,7 @@ async function main() {
     return alert('need WEBGL_depth_texture');
   }
 
-  //buffer for the frustum
+  //buffer for viewLight
   const cubeLinesBufferInfo = webglUtils.createBufferInfoFromArrays(gl, {
     position: [
       -1, -1, -1,
@@ -207,9 +207,9 @@ async function main() {
     //perspective: false,
     fieldOfView: 20,
     bias: -0.004,
-    alphaEnable: false,
+    transparency: true,
     shadows: true,
-    viewFrustum: false
+    viewLight: false
   };
 
   const gui = new dat.GUI();
@@ -222,14 +222,14 @@ async function main() {
   gui.add(settings, 'projWidth', 1, 50).name('Proj Width');
   gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
   gui.add(settings, 'bias', 1, 0.004).name('Shadow Bias');
-  gui.add(settings, 'alphaEnable').onChange(function (value) {
-    settings.alphaEnable = value;
+  gui.add(settings, 'transparency').onChange(function (value) {
+    settings.transparency = value;
   }); 
   gui.add(settings, 'shadows').onChange(function (value) {
     settings.shadows = value;
   });
-  gui.add(settings, 'viewFrustum').onChange(function (value) {
-    settings.viewFrustum = value;
+  gui.add(settings, 'viewLight').onChange(function (value) {
+    settings.viewLight = value;
   }); 
 
   const objects = await load_models(gl);
@@ -278,7 +278,7 @@ async function main() {
     gl.enable(gl.CULL_FACE);
 
     //settings per la trasparenza
-    if(settings.alphaEnable){
+    if(settings.transparency){
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     }else{
@@ -382,7 +382,7 @@ async function main() {
       });
     });
 
-    if(settings.viewFrustum){
+    if(settings.viewLight){
       const viewMatrix = m4.inverse(camera);
 
       gl.useProgram(colorProgramInfo.program);
