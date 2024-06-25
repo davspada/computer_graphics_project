@@ -221,7 +221,7 @@ async function main() {
   gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
   gui.add(settings, 'bias', -0.01, 0.01).name('Shadow Bias');
   gui.add(settings, 'alphaEnable').onChange(function (value) {
-    settings.ActivateLightShadow = value;
+    settings.alphaEnable = value;
   }); 
 
   const objects = await load_models(gl);
@@ -269,16 +269,13 @@ async function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
 
-    //opacity
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    /*var alphaEnable = false;
-    console.log(alphaEnable)
-    if(alphaEnable == true){
-
+    //settings per la trasparenza
+    if(settings.alphaEnable){
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     }else{
       gl.disable(gl.BLEND); 
-    }*/
+    }
 
     // First draw from the POV of the light
     const lightWorldMatrix = m4.lookAt(
