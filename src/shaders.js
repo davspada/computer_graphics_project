@@ -62,10 +62,9 @@ uniform float u_bias;
 
 float calculateShadow(vec4 shadowCoord) {
   vec3 projectedCoord = shadowCoord.xyz / shadowCoord.w;
-  projectedCoord = projectedCoord * 0.5 + 0.5;
   float closestDepth = texture2D(u_projectedTexture, projectedCoord.xy).r;
   float currentDepth = projectedCoord.z;
-  float shadow = currentDepth - u_bias > closestDepth ? 0.5 : 1.0;
+  float shadow = currentDepth - u_bias > closestDepth ? 0.1 : 1.0;
   return shadow;
 }
 
@@ -96,7 +95,7 @@ void main () {
     emissive +
     ambient * u_ambientLight +
     effectiveDiffuse * fakeLight * shadow +
-    effectiveSpecular * pow(specularLight, shininess),
+    effectiveSpecular * pow(specularLight, shininess) * shadow,
     effectiveOpacity
   );
 }

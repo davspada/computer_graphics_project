@@ -131,7 +131,7 @@ async function main() {
 
   async function load_models(gl) {
     const objs = [];
-    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage.obj")
+    const garage = await loadOBJAndMTL(gl, "../res/obj/Parking Garage4.obj")
     const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno.obj");
     objs.push(garage)
     objs.push(trueno);
@@ -278,11 +278,16 @@ async function main() {
     }
 
     // First draw from the POV of the light
-    const lightWorldMatrix = m4.lookAt(
+    /*const lightWorldMatrix = m4.lookAt(
       [settings.posX, settings.posY, settings.posZ],          // position
       [settings.targetX, settings.targetY, settings.targetZ], // target
       [0, 1, 0],                                              // up
-    );
+    );*/
+
+    const lightWorldMatrix = m4.translation(settings.posX, settings.posY, settings.posZ)
+    m4.xRotate(lightWorldMatrix, degToRad(-45), lightWorldMatrix)
+
+
 
     const lightProjectionMatrix = settings.perspective
       ? m4.perspective(
