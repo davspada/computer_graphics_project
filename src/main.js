@@ -99,6 +99,7 @@ async function main() {
     return alert('need WEBGL_depth_texture');  // eslint-disable-line
   }
 
+  //buffer for the frustum
   const cubeLinesBufferInfo = webglUtils.createBufferInfoFromArrays(gl, {
     position: [
       -1, -1, -1,
@@ -206,18 +207,22 @@ async function main() {
     perspective: false,
     fieldOfView: 20,
     bias: -0.006,
+    alphaEnable: false
   };
 
   const gui = new dat.GUI();
-  gui.add(settings, 'posX', -10, 10).name('Light X');
-  gui.add(settings, 'posY', -10, 10).name('Light Y');
-  gui.add(settings, 'posZ', -10, 10).name('Light Z');
-  gui.add(settings, 'targetX', -10, 10).name('Target X');
-  gui.add(settings, 'targetY', -10, 10).name('Target Y');
-  gui.add(settings, 'targetZ', -10, 10).name('Target Z');
+  gui.add(settings, 'posX', -50, 50).name('Light X');
+  gui.add(settings, 'posY', -50, 50).name('Light Y');
+  gui.add(settings, 'posZ', -50, 50).name('Light Z');
+  gui.add(settings, 'targetX', -50, 50).name('Target X');
+  gui.add(settings, 'targetY', -50, 50).name('Target Y');
+  gui.add(settings, 'targetZ', -50, 50).name('Target Z');
   gui.add(settings, 'projWidth', 1, 50).name('Proj Width');
   gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
   gui.add(settings, 'bias', -0.01, 0.01).name('Shadow Bias');
+  gui.add(settings, 'alphaEnable').onChange(function (value) {
+    settings.ActivateLightShadow = value;
+  }); 
 
   const objects = await load_models(gl);
 
@@ -263,6 +268,17 @@ async function main() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
+
+    //opacity
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    /*var alphaEnable = false;
+    console.log(alphaEnable)
+    if(alphaEnable == true){
+
+    }else{
+      gl.disable(gl.BLEND); 
+    }*/
 
     // First draw from the POV of the light
     const lightWorldMatrix = m4.lookAt(
