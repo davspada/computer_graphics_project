@@ -17,9 +17,10 @@ export function initializeCamera(radius) {
 
   function updateCamera() {
     if (internalCamera) {
-      cameraPosition[0] = cameraPosition[0];
+      //cameraPosition[0] = cameraPosition[0];
       cameraPosition[1] = specificPosition[1];
       cameraPosition[2] = specificPosition[2];
+      cameraPosition = m4.xRotation(cameraPosition,0,0,radius)
     } else {
       cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
       cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
