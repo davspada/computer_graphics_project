@@ -53,7 +53,9 @@ export function initializeCamera(radius) {
     const dy = touches[0].clientY - touches[1].clientY;
     return Math.sqrt(dx * dx + dy * dy);
   }
+  
   function onTouchStart(event) {
+    event.preventDefault(); // Prevent default pinch-to-zoom behavior
     if (event.touches.length === 1) {
       isDragging = true;
       lastX = event.touches[0].clientX;
@@ -63,7 +65,9 @@ export function initializeCamera(radius) {
       initialPinchDistance = getPinchDistance(event.touches);
     }
   }
+  
   function onTouchMove(event) {
+    event.preventDefault(); // Prevent default pinch-to-zoom behavior
     if (isDragging && event.touches.length === 1) {
       const deltaX = event.touches[0].clientX - lastX;
       const deltaY = event.touches[0].clientY - lastY;
