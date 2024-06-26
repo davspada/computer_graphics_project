@@ -1,6 +1,8 @@
 export function initializeCarControls(carTransform) {
     const keyState = {};
-    const speed = 0.1
+    const speed = 0.25
+    const rotate_speed = 0.05
+
     window.addEventListener('keydown', (event) => {
       keyState[event.key] = true;
     });
@@ -23,10 +25,10 @@ export function initializeCarControls(carTransform) {
         carTransform.translation[0] += speed; // Move right
       }
       if (keyState['q']) {
-        carTransform.rotation[1] -= speed; // Rotate left
+        carTransform.rotation[1] -= rotate_speed; // Rotate left
       }
       if (keyState['e']) {
-        carTransform.rotation[1] += speed; // Rotate right
+        carTransform.rotation[1] += rotate_speed; // Rotate right
       }
     }
   
