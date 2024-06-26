@@ -60,8 +60,10 @@ uniform vec3 u_ambientLight;
 uniform sampler2D u_projectedTexture;
 uniform float u_bias;
 
-//shadow boolean
+// Shadow boolean
 uniform int shadows;
+// Normal map toggle
+uniform int useNormalMap;
 
 float calculateShadow(vec4 shadowCoord) {
   vec3 projectedCoord = shadowCoord.xyz / shadowCoord.w;
@@ -71,19 +73,22 @@ float calculateShadow(vec4 shadowCoord) {
   return shadow;
 }
 
-void main () {
-  vec3 normal = normalize(v_normal) * (float(gl_FrontFacing) * 2.0 - 1.0);
-  vec3 tangent = normalize(v_tangent) * (float(gl_FrontFacing) * 2.0 - 1.0);
-  vec3 bitangent = normalize(cross(normal, tangent));
-
-  mat3 tbn = mat3(tangent, bitangent, normal);
-  normal = texture2D(normalMap, v_texcoord).rgb * 2. - 1.;
-  normal = normalize(tbn * normal);
+void main() {
+  vec3 normal;
+  if (useNormalMap == 1) {
+    vec3 tangent = normalize(v_tangent) * (float(gl_FrontFacing) * 2.0 - 1.0);
+    vec3 bitangent = normalize(cross(normalize(v_normal), tangent));
+    mat3 tbn = mat3(tangent, bitangent, normalize(v_normal));
+    normal = texture2D(normalMap, v_texcoord).rgb * 2.0 - 1.0;
+    normal = normalize(tbn * normal);
+  } else {
+    normal = normalize(v_normal) * (float(gl_FrontFacing) * 2.0 - 1.0);
+  }
 
   vec3 surfaceToViewDirection = normalize(v_surfaceToView);
   vec3 halfVector = normalize(u_lightDirection + surfaceToViewDirection);
 
-  float fakeLight = dot(u_lightDirection, normal) * .5 + .5;
+  float fakeLight = dot(u_lightDirection, normal) * 0.5 + 0.5;
   float specularLight = clamp(dot(normal, halfVector), 0.0, 1.0);
   vec4 specularMapColor = texture2D(specularMap, v_texcoord);
   vec3 effectiveSpecular = specular * specularMapColor.rgb;
@@ -93,26 +98,28 @@ void main () {
   float effectiveOpacity = opacity * diffuseMapColor.a * v_color.a;
 
   float shadow = calculateShadow(v_shadowCoord);
-  
-  if(shadows == 1){
-  gl_FragColor = vec4(
-    emissive +
-    ambient * u_ambientLight +
-    effectiveDiffuse * fakeLight * shadow +
-    effectiveSpecular * pow(specularLight, shininess) * shadow,
-    effectiveOpacity
-  );
-  }else{
-    gl_FragColor = vec4(
-    emissive +
-    ambient * u_ambientLight +
-    effectiveDiffuse * fakeLight +
-    effectiveSpecular * pow(specularLight, shininess) ,
-    effectiveOpacity
-  );
-  }
-}
 
+  vec4 color;
+  if (shadows == 1) {
+    color = vec4(
+      emissive +
+      ambient * u_ambientLight +
+      effectiveDiffuse * fakeLight * shadow +
+      effectiveSpecular * pow(specularLight, shininess) * shadow,
+      effectiveOpacity
+    );
+  } else {
+    color = vec4(
+      emissive +
+      ambient * u_ambientLight +
+      effectiveDiffuse * fakeLight +
+      effectiveSpecular * pow(specularLight, shininess),
+      effectiveOpacity
+    );
+  }
+
+  gl_FragColor = color;
+}
 `;
 
 export const vertexShadow = `

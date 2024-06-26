@@ -210,7 +210,8 @@ async function main() {
     bias: 0.01,
     transparency: true,
     shadows: true,
-    viewLight: false
+    viewLight: false,
+    toggleNormalMaps: true
   };
 
   const gui = new dat.GUI();
@@ -228,6 +229,9 @@ async function main() {
   });
   gui.add(settings, 'viewLight').onChange(function (value) {
     settings.viewLight = value;
+  });
+  gui.add(settings, 'toggleNormalMaps').onChange(function (value) {
+    settings.toggleNormalMaps = value;
   });
 
 
@@ -248,7 +252,7 @@ async function main() {
   const objOffset = m4.scaleVector(m4.addVectors(totalExtents.min, m4.scaleVector(range, 0.5)), -1);
   const cameraTarget = [0, 0, 0];
   const radius = m4.length(range) * 0.5;
-  const cameraConfig = initializeCamera(radius);
+  const cameraConfig = initializeCamera(radius - 15);
   const zNear = radius / 100;
   const zFar = radius * 3;
 
@@ -260,7 +264,7 @@ async function main() {
 
   const carTransform = {
     scale: [1,1,1],
-    rotation: [0, 0, 0],
+    rotation: [0, 45, 0],
     translation: [0, -3.25, 0], // Adjust the translation to position the Trueno independently
   };
 
@@ -385,8 +389,10 @@ async function main() {
       u_projectedTexture: depthTexture,
       u_lightWorldPosition: [settings.posX, settings.posY, settings.posZ],
       u_bias: settings.bias,
-      shadows: settings.shadows
+      shadows: settings.shadows,
+      useNormalMap: settings.toggleNormalMaps
     };
+    //console.log(sharedUniforms)
 
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
 
