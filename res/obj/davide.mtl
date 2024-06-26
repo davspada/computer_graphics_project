@@ -1,0 +1,53 @@
+# Blender 4.1.1 MTL File: 'None'
+# www.blender.org
+
+newmtl black
+Ns 181.212936
+Ka 1.000000 1.000000 1.000000
+Kd 0.066806 0.066806 0.066806
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl bolt
+Ns 441.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd textures/io.jpeg
+
+newmtl metal
+Ns 571.262573
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.603013 0.195189
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl white
+Ns 224.999985
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl wood
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd /home/davide/Downloads/models/painting/C:/Users/Fqrhmn/Documents/Downloads/Compressed/Wood068_2K-PNG/Wood068_2K_Color.png
+map_Ns /home/davide/Downloads/models/painting/C:/Users/Fqrhmn/Documents/Downloads/Compressed/Wood068_2K-PNG/Wood068_2K_Roughness.png
+map_Bump /home/davide/Downloads/models/painting/C:/Users/Fqrhmn/Documents/Downloads/Compressed/Wood068_2K-PNG/Wood068_2K_NormalDX.png

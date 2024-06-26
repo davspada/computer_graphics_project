@@ -132,10 +132,13 @@ async function main() {
 
   async function load_models(gl) {
     const objs = [];
-    const garage = await loadOBJAndMTL(gl, "../res/obj/garage_new2.obj")
-    const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno.obj");
-    objs.push(garage)
+    //const garage = await loadOBJAndMTL(gl, "../res/obj/garage_new2.obj")
+    const garage = await loadOBJAndMTL(gl, "../res/obj/garage_scaled.obj")
+    const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno_scaled.obj");
+    const davide = await loadOBJAndMTL(gl, "../res/obj/davide.obj");
+    objs.push(garage);
     objs.push(trueno);
+    objs.push(davide)
     return objs;
   }
 
@@ -143,7 +146,7 @@ async function main() {
   const colorProgramInfo = webglUtils.createProgramInfo(gl, [vertexShadow, fragmentShadow]);
 
   const depthTexture = gl.createTexture();
-  const depthTextureSize = 512;
+  const depthTextureSize = 1024;
   gl.bindTexture(gl.TEXTURE_2D, depthTexture);
   gl.texImage2D(
       gl.TEXTURE_2D,      // target
@@ -200,14 +203,11 @@ async function main() {
     posX: 2.5,
     posY: 4.8,
     posZ: 4.3,
-    //targetX: 2.5,
-    //targetY: 0,
-    //targetZ: 3.5,
     projWidth: 10,
     projHeight: 10,
     //perspective: false,
     fieldOfView: 20,
-    bias: -0.004,
+    bias: 0.01,
     transparency: true,
     shadows: true,
     viewLight: false
@@ -217,12 +217,9 @@ async function main() {
   gui.add(settings, 'posX', -50, 50).name('Light X');
   gui.add(settings, 'posY', -50, 50).name('Light Y');
   gui.add(settings, 'posZ', -50, 50).name('Light Z');
-  //gui.add(settings, 'targetX', -50, 50).name('Target X');
-  //gui.add(settings, 'targetY', -50, 50).name('Target Y');
-  //gui.add(settings, 'targetZ', -50, 50).name('Target Z');
   gui.add(settings, 'projWidth', 1, 50).name('Proj Width');
   gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
-  gui.add(settings, 'bias', 1, 0.004).name('Shadow Bias');
+  gui.add(settings, 'bias', -0.01, 0.01).name('Shadow Bias');
   gui.add(settings, 'transparency').onChange(function (value) {
     settings.transparency = value;
   }); 
@@ -231,7 +228,8 @@ async function main() {
   });
   gui.add(settings, 'viewLight').onChange(function (value) {
     settings.viewLight = value;
-  }); 
+  });
+
 
   const objects = await load_models(gl);
 
@@ -261,9 +259,15 @@ async function main() {
   };
 
   const carTransform = {
-    scale: [1, 1, 1],
+    scale: [1,1,1],
     rotation: [0, 0, 0],
-    translation: [0, -20, 0], // Adjust the translation to position the Trueno independently
+    translation: [0, -3.25, 0], // Adjust the translation to position the Trueno independently
+  };
+
+  const davideTransform = {
+    scale: [1.5,1.5,1.5],
+    rotation: [0, 0, 0],
+    translation: [-35, 0, 0],
   };
 
   const updateCarTransform = initializeCarControls(carTransform)
@@ -338,6 +342,9 @@ async function main() {
       } else if (index === 1) { // Trueno
         u_world = setTransformationMatrix(carTransform);
       }
+      else if (index === 2) { // Painting
+        u_world = setTransformationMatrix(davideTransform);
+      }
       u_world = m4.translate(u_world, ...objOffset);
 
       object.parts.forEach(({ bufferInfo }) => {
@@ -389,6 +396,9 @@ async function main() {
         u_world = setTransformationMatrix(garageTransform);
       } else if (index === 1) { // Trueno
         u_world = setTransformationMatrix(carTransform);
+      }
+      else if (index === 2) { // Painting
+        u_world = setTransformationMatrix(davideTransform);
       }
       u_world = m4.translate(u_world, ...objOffset);
 

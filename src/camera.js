@@ -2,9 +2,9 @@ export function initializeCamera(radius) {
   let cameraAngleRadians = 0;
   let cameraRadius = radius;
   const cameraPosition = [0, 0, radius];
-  const cameraSpeedMouse = 0.005;
+  const cameraSpeedMouse = 0.025;
   const cameraSpeedKeyboard = 0.25;
-  const zoomSpeed = 0.25;
+  const zoomSpeed = 0.05;
   const cameraSpeedGamepad = 0.05;
   const zoomSpeedGamepad = 0.25;
   let internalCamera = false; // Boolean flag to control the mode
@@ -29,9 +29,9 @@ export function initializeCamera(radius) {
       cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
       cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
     }
-    cameraRadius = clamp(cameraRadius, -180, 180); // Clamp cameraRadius between -180 and 180
+    cameraRadius = clamp(cameraRadius, -28, 28); // Clamp cameraRadius between -180 and 180
     //debug for camera position
-    //console.log(cameraPosition);
+    //console.log(cameraRadius);
   }
 
   function onMouseDown(event) {
