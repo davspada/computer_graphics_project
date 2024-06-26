@@ -48,6 +48,6 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd /home/davide/Downloads/models/painting/C:/Users/Fqrhmn/Documents/Downloads/Compressed/Wood068_2K-PNG/Wood068_2K_Color.png
-map_Ns /home/davide/Downloads/models/painting/C:/Users/Fqrhmn/Documents/Downloads/Compressed/Wood068_2K-PNG/Wood068_2K_Roughness.png
-map_Bump /home/davide/Downloads/models/painting/C:/Users/Fqrhmn/Documents/Downloads/Compressed/Wood068_2K-PNG/Wood068_2K_NormalDX.png
+map_Kd textures/painting/Wood068_2K_Color.png
+map_Ns textures/painting/Wood068_2K_Roughness.png
+map_Bump textures/painting/Wood068_2K_NormalDX.png
