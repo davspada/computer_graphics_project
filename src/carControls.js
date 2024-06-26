@@ -30,6 +30,20 @@ export function initializeCarControls(carTransform) {
       if (keyState['e']) {
         carTransform.rotation[1] += rotate_speed; // Rotate right
       }
+      if (keyState['z']) {
+        carTransform.rotation[0] -= rotate_speed; // Rotate around x-axis (upwards)
+      }
+      if (keyState['c']) {
+        carTransform.rotation[0] += rotate_speed; // Rotate around x-axis (downwards)
+      }
+      if (keyState['r']) {
+        carTransform.rotation[0] = 0;
+        carTransform.rotation[1] = 45;
+        carTransform.rotation[2] = 0; // Reset position
+        carTransform.translation[0] = 0
+        carTransform.translation[1] = -3.25
+        carTransform.translation[2] = 0
+      }
     }
   
     return updateCarTransform;
