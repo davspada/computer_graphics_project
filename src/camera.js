@@ -25,7 +25,7 @@ export function initializeCamera(radius) {
       cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
       cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
     }
-    console.log(cameraPosition);
+    //console.log(cameraPosition);
   }
 
   function onMouseDown(event) {

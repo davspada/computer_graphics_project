@@ -1,30 +1,6 @@
 # Blender 4.1.1 MTL File: 'Garage.blend'
 # www.blender.org
 
-newmtl Barrel_1
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
-illum 2
-map_Kd textures/garage_new/barelLP _Barrel_1_BaseColor.png
-map_Ns textures/garage_new/barelLP _Barrel_1_Roughness.png
-map_refl textures/garage_new/barelLP _Barrel_1_Metallic.png
-map_Bump textures/garage_new/barelLP _Barrel_1_Normal.png
-
-newmtl Exit
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
-illum 2
-map_Kd textures/garage_new/exit_Exit_BaseColor.png
-map_Ns textures/garage_new/exit_Exit_Roughness.png
-map_refl textures/garage_new/exit_Exit_Metallic.png
-map_Bump textures/garage_new/exit_Exit_Normal.png
-
 newmtl Lamp
 Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
@@ -45,7 +21,7 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd textures/garage_new/raft1_Shelves_material_BaseColor.png
-map_Ns textures/garage_new/raft1_Shelves_material_Roughness.png
+map_Ns textures/garage_new/raft1_Shelves_material_Metallic.png
 map_refl textures/garage_new/raft1_Shelves_material_Metallic.png
 map_Bump textures/garage_new/raft1_Shelves_material_Normal.png
 
@@ -73,30 +49,6 @@ map_Ns textures/garage_new/topbars_Top_Roughness.png
 map_refl textures/garage_new/topbars_Top_Metallic.png
 map_Bump textures/garage_new/topbars_Top_Normal.png
 
-newmtl boxlmat
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
-illum 2
-map_Kd textures/garage_new/arel_boxlmat_BaseColor.png
-map_Ns textures/garage_new/arel_boxlmat_Roughness.png
-map_refl textures/garage_new/arel_boxlmat_Metallic.png
-map_Bump textures/garage_new/arel_boxlmat_Normal.png
-
-newmtl boxsmat
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
-illum 2
-map_Kd textures/garage_new/boxsmall_boxsmat_BaseColor.png
-map_Ns textures/garage_new/boxsmall_boxsmat_Roughness.png
-map_refl textures/garage_new/boxsmall_boxsmat_Metallic.png
-map_Bump textures/garage_new/boxsmall_boxsmat_Normal.png
-
 newmtl doors
 Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
@@ -104,10 +56,10 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd textures/garage_new/doors_doors_BaseColor.png
-map_Ns textures/garage_new/doors_doors_Roughness.png
-map_refl textures/garage_new/doors_doors_Metallic.png
-map_Bump textures/garage_new/doors_doors_Normal.png
+map_Kd  textures/garage_new/door/metal_0025_color_1k.jpg
+map_Ns  textures/garage_new/door/metal_0025_roughness_1k.jpg
+map_refl textures/garage_new/door/metal_0025_metallic_1k.jpg
+map_Bump textures/garage_new/door/metal_0025_normal_opengl_1k.png
 
 newmtl electrical_boxes.001
 Ka 1.000000 1.000000 1.000000
@@ -121,29 +73,17 @@ map_Ns textures/garage_new/modLP_electrical boxes.001_Roughness.png
 map_refl textures/garage_new/modLP_electrical boxes.001_Metallic.png
 map_Bump textures/garage_new/modLP_electrical boxes.001_Normal.png
 
-newmtl front
+newmtl floor
+Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
-Ni 1.450000
+Ni 1.500000
 d 1.000000
 illum 2
-map_Kd textures/garage_new/front_front_BaseColor.png
-map_Ns textures/garage_new/front_front_Roughness.png
-map_refl textures/garage_new/front_front_Metallic.png
-map_Bump textures/garage_new/front_front_Normal.png
-
-newmtl lambert1
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-illum 2
-map_Kd textures/garage_new/fire_lambert1_BaseColor.png
-map_Ns textures/garage_new/fire_lambert1_Roughness.png
-map_refl textures/garage_new/fire_lambert1_Metallic.png
-map_d textures/garage_new/fire_lambert1_BaseColor.png
-map_Bump textures/garage_new/fire_lambert1_Normal.png
+map_Kd textures/garage_new/floor/DiamondPlate008B_1K-JPG_Color.jpg
+map_refl textures/garage_new/floor/DiamondPlate008B_1K-JPG_Roughness.jpg
+map_Bump textures/garage_new/floor/DiamondPlate008B_1K-JPG_NormalGL.jpg
 
 newmtl supp
 Ka 1.000000 1.000000 1.000000

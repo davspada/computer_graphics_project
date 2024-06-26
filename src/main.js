@@ -2,6 +2,7 @@ import { parseOBJ, parseMTL } from './obj_mtl.js';
 import { create1PixelTexture, createTexture, generateTangents, getGeometriesExtents, degToRad, maxVector, minVector } from './utils.js';
 import { initializeCamera } from './camera.js';
 import { vertexShaderSource, fragmentShaderSource, vertexShadow, fragmentShadow } from './shaders.js';
+import { initializeCarControls } from './carControls.js'
 
 async function loadOBJAndMTL(gl, objHref) {
   const response = await fetch(objHref);
@@ -131,7 +132,7 @@ async function main() {
 
   async function load_models(gl) {
     const objs = [];
-    const garage = await loadOBJAndMTL(gl, "../res/obj/garage_new.obj")
+    const garage = await loadOBJAndMTL(gl, "../res/obj/garage_new2.obj")
     const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno.obj");
     objs.push(garage)
     objs.push(trueno);
@@ -253,11 +254,19 @@ async function main() {
   const zNear = radius / 100;
   const zFar = radius * 3;
 
-  const carTransform = {
+  const garageTransform = {
     scale: [1,1,1],
     rotation: [0, 0, 0],
     translation: [0, 0, 0],
   };
+
+  const carTransform = {
+    scale: [1, 1, 1],
+    rotation: [0, 0, 0],
+    translation: [0, -20, 0], // Adjust the translation to position the Trueno independently
+  };
+
+  const updateCarTransform = initializeCarControls(carTransform)
 
   function setTransformationMatrix(transform) {
     let matrix = m4.identity();
@@ -322,9 +331,13 @@ async function main() {
       u_projection: lightProjectionMatrix,
     });
 
-    objects.forEach((object) => {
+    objects.forEach((object, index) => {
       let u_world = m4.identity();
-      u_world = setTransformationMatrix(carTransform);
+      if (index === 0) { // Garage
+        u_world = setTransformationMatrix(garageTransform);
+      } else if (index === 1) { // Trueno
+        u_world = setTransformationMatrix(carTransform);
+      }
       u_world = m4.translate(u_world, ...objOffset);
 
       object.parts.forEach(({ bufferInfo }) => {
@@ -370,9 +383,13 @@ async function main() {
 
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);
 
-    objects.forEach((object) => {
+    objects.forEach((object, index) => {
       let u_world = m4.identity();
-      u_world = setTransformationMatrix(carTransform);
+      if (index === 0) { // Garage
+        u_world = setTransformationMatrix(garageTransform);
+      } else if (index === 1) { // Trueno
+        u_world = setTransformationMatrix(carTransform);
+      }
       u_world = m4.translate(u_world, ...objOffset);
 
       object.parts.forEach(({ bufferInfo, material }) => {
@@ -407,6 +424,7 @@ async function main() {
       // calls gl.drawArrays or gl.drawElements
       webglUtils.drawBufferInfo(gl, cubeLinesBufferInfo, gl.LINES);
     }
+    updateCarTransform()
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
