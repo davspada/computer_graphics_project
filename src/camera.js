@@ -15,16 +15,22 @@ export function initializeCamera(radius) {
   let lastY = 0;
   let initialPinchDistance = null;
 
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
   function updateCamera() {
     if (internalCamera) {
-      //cameraPosition[0] = cameraPosition[0];
+      // cameraPosition[0] = cameraPosition[0];
       cameraPosition[1] = specificPosition[1];
       cameraPosition[2] = specificPosition[2];
-      cameraPosition = m4.xRotation(cameraPosition,0,0,radius)
+      cameraPosition = m4.xRotation(cameraPosition, 0, 0, radius);
     } else {
       cameraPosition[0] = Math.sin(cameraAngleRadians) * cameraRadius;
       cameraPosition[2] = Math.cos(cameraAngleRadians) * cameraRadius;
     }
+    cameraRadius = clamp(cameraRadius, -180, 180); // Clamp cameraRadius between -180 and 180
+    //debug for camera position
     //console.log(cameraPosition);
   }
 
@@ -54,6 +60,7 @@ export function initializeCamera(radius) {
 
   function onWheel(event) {
     cameraRadius += event.deltaY * zoomSpeed;
+    cameraRadius = clamp(cameraRadius, -180, 180); // Clamp cameraRadius between -180 and 180
     updateCamera();
   }
 
@@ -89,6 +96,7 @@ export function initializeCamera(radius) {
       const newPinchDistance = getPinchDistance(event.touches);
       const pinchDelta = newPinchDistance - initialPinchDistance;
       cameraRadius -= pinchDelta * (zoomSpeed / 100);
+      cameraRadius = clamp(cameraRadius, -180, 180); // Clamp cameraRadius between -180 and 180
       initialPinchDistance = newPinchDistance;
       updateCamera();
     }
@@ -114,6 +122,7 @@ export function initializeCamera(radius) {
         cameraAngleRadians += cameraSpeedKeyboard;
         break;
     }
+    cameraRadius = clamp(cameraRadius, -180, 180); // Clamp cameraRadius between -180 and 180
     updateCamera();
   }
 
@@ -121,21 +130,22 @@ export function initializeCamera(radius) {
     const gamepads = navigator.getGamepads();
     if (gamepads[0]) {
       const gp = gamepads[0];
-      const leftStickX = gp.axes[0];
-      const leftStickY = gp.axes[1];
-      const rightStickX = gp.axes[2];
-      const rightStickY = gp.axes[3];
+      const rightStickX = gp.axes[0];
+      const rightStickY = gp.axes[1];
+      // const rightStickX = gp.axes[2];
+      // const rightStickY = gp.axes[3];
       const leftTrigger = gp.buttons[6].value;
       const rightTrigger = gp.buttons[7].value;
 
       // Camera rotation
-      cameraAngleRadians += leftStickX * cameraSpeedGamepad;
+      cameraAngleRadians += rightStickX * cameraSpeedGamepad;
       if (!internalCamera) {
-        cameraPosition[1] -= leftStickY * cameraSpeedGamepad;
+        cameraPosition[1] -= rightStickY * cameraSpeedGamepad;
       }
 
       // Camera zoom
       cameraRadius -= (rightTrigger - leftTrigger) * zoomSpeedGamepad;
+      cameraRadius = clamp(cameraRadius, -180, 180); // Clamp cameraRadius between -180 and 180
 
       updateCamera();
     }
