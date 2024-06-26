@@ -205,13 +205,14 @@ async function main() {
     posZ: 4.3,
     projWidth: 10,
     projHeight: 10,
-    //perspective: false,
+    perspective: false,
     fieldOfView: 20,
     bias: 0.01,
     transparency: true,
     shadows: true,
     viewLight: false,
-    toggleNormalMaps: true
+    toggleNormalMaps: true,
+    specularIntensity: 0.5,
   };
 
   const gui = new dat.GUI();
@@ -221,8 +222,12 @@ async function main() {
   gui.add(settings, 'projWidth', 1, 50).name('Proj Width');
   gui.add(settings, 'projHeight', 1, 50).name('Proj Height');
   gui.add(settings, 'bias', -0.01, 0.01).name('Shadow Bias');
+  gui.add(settings, 'specularIntensity', 0, 1).name('specularIntensity');
   gui.add(settings, 'transparency').onChange(function (value) {
     settings.transparency = value;
+  });
+  gui.add(settings, 'perspective').onChange(function (value) {
+    settings.perspective = value;
   }); 
   gui.add(settings, 'shadows').onChange(function (value) {
     settings.shadows = value;
@@ -233,6 +238,8 @@ async function main() {
   gui.add(settings, 'toggleNormalMaps').onChange(function (value) {
     settings.toggleNormalMaps = value;
   });
+
+
 
 
   const objects = await load_models(gl);
@@ -301,13 +308,6 @@ async function main() {
     }else{
       gl.disable(gl.BLEND); 
     }
-
-    // First draw from the POV of the light
-    /*const lightWorldMatrix = m4.lookAt(
-      [settings.posX, settings.posY, settings.posZ],          // position
-      [0,0,0], // target
-      [0, 1, 0],                                              // up
-    );*/
 
     const lightWorldMatrix = m4.translation(settings.posX, settings.posY, settings.posZ)
     m4.xRotate(lightWorldMatrix, degToRad(-45), lightWorldMatrix)
@@ -390,8 +390,10 @@ async function main() {
       u_lightWorldPosition: [settings.posX, settings.posY, settings.posZ],
       u_bias: settings.bias,
       shadows: settings.shadows,
-      useNormalMap: settings.toggleNormalMaps
+      useNormalMap: settings.toggleNormalMaps,
+      specularIntensity: settings.specularIntensity
     };
+    //debug to check passed values
     //console.log(sharedUniforms)
 
     webglUtils.setUniforms(meshProgramInfo, sharedUniforms);

@@ -65,6 +65,9 @@ uniform int shadows;
 // Normal map toggle
 uniform int useNormalMap;
 
+//specular intensity slider
+uniform float specularIntensity;
+
 float calculateShadow(vec4 shadowCoord) {
   vec3 projectedCoord = shadowCoord.xyz / shadowCoord.w;
   float closestDepth = texture2D(u_projectedTexture, projectedCoord.xy).r;
@@ -91,8 +94,8 @@ void main() {
   float fakeLight = dot(u_lightDirection, normal) * 0.5 + 0.5;
   float specularLight = clamp(dot(normal, halfVector), 0.0, 1.0);
   vec4 specularMapColor = texture2D(specularMap, v_texcoord);
-  vec3 effectiveSpecular = specular * specularMapColor.rgb;
-
+  vec3 effectiveSpecular = specular * specularMapColor.rgb * specularIntensity;
+  
   vec4 diffuseMapColor = texture2D(diffuseMap, v_texcoord);
   vec3 effectiveDiffuse = diffuse * diffuseMapColor.rgb * v_color.rgb;
   float effectiveOpacity = opacity * diffuseMapColor.a * v_color.a;
