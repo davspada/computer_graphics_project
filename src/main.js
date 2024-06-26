@@ -212,7 +212,7 @@ async function main() {
     shadows: true,
     viewLight: false,
     toggleNormalMaps: true,
-    specularIntensity: 0.5,
+    specularIntensity: 0.25,
   };
 
   const gui = new dat.GUI();

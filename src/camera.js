@@ -107,10 +107,8 @@ export function initializeCamera(radius) {
     const gamepads = navigator.getGamepads();
     if (gamepads[0]) {
       const gp = gamepads[0];
-      const leftStickX = gp.axes[0];
-      const leftStickY = gp.axes[1];
-      const rightStickX = gp.axes[2];
-      const rightStickY = gp.axes[3];
+      const leftStickX = gp.axes[2];
+      const leftStickY = gp.axes[3];
       const leftTrigger = gp.buttons[6].value;
       const rightTrigger = gp.buttons[7].value;
 
