@@ -133,9 +133,9 @@ async function main() {
   async function load_models(gl) {
     const objs = [];
     //const garage = await loadOBJAndMTL(gl, "../res/obj/garage_new2.obj")
-    const garage = await loadOBJAndMTL(gl, "../res/obj/garage_scaled.obj")
-    const trueno = await loadOBJAndMTL(gl, "../res/obj/trueno_scaled.obj");
-    const davide = await loadOBJAndMTL(gl, "../res/obj/davide.obj");
+    const garage = await loadOBJAndMTL(gl, "./res/obj/garage_scaled.obj")
+    const trueno = await loadOBJAndMTL(gl, "./res/obj/trueno_scaled.obj");
+    const davide = await loadOBJAndMTL(gl, "./res/obj/davide.obj");
     objs.push(garage);
     objs.push(trueno);
     objs.push(davide)
