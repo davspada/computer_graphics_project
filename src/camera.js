@@ -67,7 +67,7 @@ export function initializeCamera(radius) {
   }
   
   function onTouchMove(event) {
-    event.preventDefault(); // Prevent default pinch-to-zoom behavior
+    event.preventDefault();
     if (isDragging && event.touches.length === 1) {
       const deltaX = event.touches[0].clientX - lastX;
       const deltaY = event.touches[0].clientY - lastY;
@@ -79,7 +79,7 @@ export function initializeCamera(radius) {
     } else if (event.touches.length === 2) {
       const newPinchDistance = getPinchDistance(event.touches);
       const pinchDelta = newPinchDistance - initialPinchDistance;
-      cameraRadius -= pinchDelta * (zoomSpeed / 100);
+      cameraRadius -= pinchDelta * (zoomSpeed / 50);
       cameraRadius = clamp(cameraRadius, -28, 28);
       initialPinchDistance = newPinchDistance;
       updateCamera();

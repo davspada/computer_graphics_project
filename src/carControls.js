@@ -14,30 +14,30 @@ export function initializeCarControls(carTransform) {
   function updateCarTransform() {
     // Keyboard controls
     if (keyState['w']) {
-      carTransform.translation[2] -= speed; // Move forward
+      carTransform.translation[2] -= speed; //move forward
     }
     if (keyState['s']) {
-      carTransform.translation[2] += speed; // Move backward
+      carTransform.translation[2] += speed; //move backward
     }
     if (keyState['a']) {
-      carTransform.translation[0] -= speed; // Move left
+      carTransform.translation[0] -= speed; //move left
     }
     if (keyState['d']) {
-      carTransform.translation[0] += speed; // Move right
+      carTransform.translation[0] += speed; //move right
     }
     if (keyState['q']) {
-      carTransform.rotation[1] -= rotate_speed; // Rotate left
+      carTransform.rotation[1] -= rotate_speed; //rotate left
     }
     if (keyState['e']) {
-      carTransform.rotation[1] += rotate_speed; // Rotate right
+      carTransform.rotation[1] += rotate_speed; // right
     }
     if (keyState['z']) {
-      carTransform.rotation[0] -= rotate_speed; // Rotate around x-axis (upwards)
+      carTransform.rotation[0] -= rotate_speed; //rotate around x-axis (up)
     }
     if (keyState['c']) {
-      carTransform.rotation[0] += rotate_speed; // Rotate around x-axis (downwards)
+      carTransform.rotation[0] += rotate_speed; //(down)
     }
-    if (keyState['r']) {
+    if (keyState['r']) { //reset car initial state
       carTransform.rotation[0] = 0;
       carTransform.rotation[1] = 45;
       carTransform.rotation[2] = 0; // Reset rotation
@@ -55,7 +55,7 @@ export function initializeCarControls(carTransform) {
       const rightStickX = gp.axes[2];
       const rightStickY = gp.axes[3];
 
-      // Move the car with the left stick
+      //move the car with the left stick
       carTransform.translation[0] += leftStickX * speed;
       carTransform.translation[2] += leftStickY * speed;
 
