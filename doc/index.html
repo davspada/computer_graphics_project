@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Davide Spada - 0001134790</title>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <h1>WebGL Project Documentation</h1>
+      <h1>Davide Spada - 0001134790</h1>
+      <h2>Project Overview</h2>
+      <p>This project is a WebGL-based application that loads and renders 3D models: it represents a Garage with a Toyota AE86.
+        It includes functionality for lighting, shadows, toggle of the various features, user interaction through GUI controls, mouse, keyboard, touch, and gamepad.</p>
+      <p>Please note that the project is available at <a href="https://davspada.github.io/computer_graphics_project/"> this link</a></p>
+
+      <h2>Key Features</h2>
+      <ul>
+        <li>Loading and parsing OBJ and MTL files</li>
+        <li>Handling textures and materials</li>
+        <li>Rendering in real time</li>
+        <li>Implementing depth textures for shadow mapping</li>
+        <li>Implementing different features like transparency, normal mapping, etc.</li>
+        <li>Interactive GUI for adjusting lighting, projection, and other settings</li>
+        <li>Interactive controls via mouse, keyboard, touch, and gamepad</li>
+      </ul>
+
+      <h2>File Structure</h2>
+      <p>The project is organized into the following main files:</p>
+      <ul>
+        <li><code>index.html</code>: The main HTML file</li>
+        <li><code>src/main.js</code>: The main JavaScript file containing the application logic</li>
+        <li><code>src/obj_mtl.js</code>: Handles the parsing of .obj and .mtl files</li>
+        <li><code>src/utils.js</code>: Utility functions for the application</li>
+        <li><code>src/shaders.js</code>: Vertex and fragment shaders</li>
+        <li><code>src/camera.js</code>: Code handling camera controls (mouse, keyboard, touch, gamepad)</li>
+        <li><code>src/carControls.js</code>: Code handling car controls (keyboard, gamepad)</li>
+        <li><code>res/</code>: Directory containing OBJ and MTL files for 3D models, their textures, additional code(GUI).</li>
+      </ul>
+
+      <h2>How to Run the Project</h2>
+      <p>To run the project, follow these steps:</p>
+      <ol>
+        <li>Clone the repository to your local machine.</li>
+        <li>Ensure you have a local web server to serve the files.</li>
+        <li>Open the <code>index.html</code> file in your browser.</li>
+        <li>Interact with the GUI controls to adjust lighting, shadows, and other settings.</li>
+      </ol>
+
+      <h2>Core Components</h2>
+
+      <h3>Main Application</h3>
+      <p>The main application sets up the WebGL context, loads the models, and handles rendering. It also includes a GUI for user interaction.</p>
+      <pre><code>async function main() {
+  // WebGL context setup
+  const canvas = document.querySelector("#canvas");
+  const gl = canvas.getContext("webgl");
+
+  // Load models
+  const objects = await load_models(gl);
+
+  // render loop
+  requestAnimationFrame(render);
+}</code></pre>
+
+      <h3>Rendering Function</h3>
+      <p>The rendering function handles the drawing of the scene, including depth texture rendering for shadows and the main scene rendering with lighting and shadows applied.</p>
+      <pre><code>function render(time) {
+  // Configure needed variable
+  // Draw to the depth texture (to handle shadows)
+  // Main scene rendering
+  requestAnimationFrame(render);
+}</code></pre>
+
+
+      <h2>WebGL Functionalities Utilized</h2>
+      <ul>
+        <li>Creating and managing WebGL contexts</li>
+        <li>Loading and parsing OBJ and MTL files</li>
+        <li>Handling textures and materials</li>
+        <li>Depth texture creation and shadow mapping</li>
+        <li>Implementing normal mapping</li>
+        <li>Transparency setup</li>
+        <li>Interactive GUI for user input</li>
+        <li>Handling input from mouse, keyboard, touch, and gamepad</li>
+      </ul>
+      
+      <h2>Dependencies</h2>
+      <p>This project relies on the following libraries:</p>
+      <ul>
+        <li>WebGLUtils: Utility functions for WebGL</li>
+        <li>dat.GUI: A lightweight graphical user interface for changing variables in JavaScript</li>
+        <li>m4: matrix utility</li>
+      </ul>
+
+      <h2>Future Improvements</h2>
+      <p>Potential improvements for the project include:</p>
+      <ul>
+        <li>Adding more complex lighting models</li>
+        <li>Optimizing performance for larger models</li>
+        <li>Adding support for more file formats</li>
+      </ul>
+
+    </div>
+    <div class="screenshots">
+      <h2>Screenshots</h2>
+      <img src="res/Screenshot1.png" alt="Screenshot 1">
+      <img src="res/Screenshot2.png" alt="Screenshot 2">
+      <img src="res/Screenshot4.png" alt="Screenshot 2">
+      <img src="res/Screenshot3.png" alt="Screenshot 3">
+    </div>
+  </div>
+</body>
+</html>
