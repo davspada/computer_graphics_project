@@ -1,6 +1,4 @@
 # computer_graphics_project
-   Davide Spada - 0001134790
-
 WebGL Project Documentation
 ===========================
 
