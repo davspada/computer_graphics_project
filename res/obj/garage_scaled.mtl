@@ -1,0 +1,134 @@
+# Blender 4.1.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Lamp
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/lamp_Lamp_BaseColor.png
+map_Ns textures/garage_new/lamp_Lamp_Roughness.png
+map_refl textures/garage_new/lamp_Lamp_Metallic.png
+map_Bump textures/garage_new/lamp_Lamp_Normal.png
+
+newmtl Shelves_material
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/raft1_Shelves_material_BaseColor.png
+map_Ns textures/garage_new/raft1_Shelves_material_Metallic.png
+map_refl textures/garage_new/raft1_Shelves_material_Metallic.png
+map_Bump textures/garage_new/raft1_Shelves_material_Normal.png
+
+newmtl Tools
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/ToolsBox1_Tools_BaseColor.png
+map_Ns textures/garage_new/ToolsBox1_Tools_Roughness.png
+map_refl textures/garage_new/ToolsBox1_Tools_Metallic.png
+map_Bump textures/garage_new/ToolsBox1_Tools_Normal.png
+
+newmtl Top
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/topbars_Top_BaseColor.png
+map_Ns textures/garage_new/topbars_Top_Roughness.png
+map_refl textures/garage_new/topbars_Top_Metallic.png
+map_Bump textures/garage_new/topbars_Top_Normal.png
+
+newmtl doors
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/door/metal_0025_color_1k.jpg
+map_Ns textures/garage_new/door/metal_0025_roughness_1k.jpg
+map_refl textures/garage_new/door/metal_0025_metallic_1k.jpg
+map_Bump textures/garage_new/door/metal_0025_normal_opengl_1k.png
+
+newmtl electrical_boxes.001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/modLP_electrical boxes.001_BaseColor.png
+map_Ns textures/garage_new/modLP_electrical boxes.001_Roughness.png
+map_refl textures/garage_new/modLP_electrical boxes.001_Metallic.png
+map_Bump textures/garage_new/modLP_electrical boxes.001_Normal.png
+
+newmtl floor
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/floor/DiamondPlate008B_1K-JPG_Color.jpg
+map_refl textures/garage_new/floor/DiamondPlate008B_1K-JPG_Roughness.jpg
+map_Bump textures/garage_new/floor/DiamondPlate008B_1K-JPG_NormalGL.jpg
+
+newmtl supp
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/suport_supp_BaseColor.png
+map_Ns textures/garage_new/suport_supp_Roughness.png
+map_refl textures/garage_new/suport_supp_Metallic.png
+map_Bump textures/garage_new/suport_supp_Normal.png
+
+newmtl tire_carboad_box_mat
+Ka 0.500000 0.500000 0.500000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd textures/garage_new/tires_tire_carboad_box_mat_BaseColor.png
+map_Ns textures/garage_new/tires_tire_carboad_box_mat_Roughness.png
+map_refl textures/garage_new/tires_tire_carboad_box_mat_Metallic.png
+map_Bump textures/garage_new/tires_tire_carboad_box_mat_Normal.png
+
+newmtl wall1
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/wall_wall1_BaseColor.png
+map_Ns textures/garage_new/wall_wall1_Roughness.png
+map_refl textures/garage_new/wall_wall1_Metallic.png
+map_Bump textures/garage_new/wall_wall1_Normal.png
+
+newmtl window
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/garage_new/window_window_BaseColor.png
+map_Ns textures/garage_new/window_window_Roughness.png
+map_refl textures/garage_new/window_window_Metallic.png
+map_Bump textures/garage_new/window_window_Normal.png

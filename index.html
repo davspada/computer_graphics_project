@@ -5,19 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>CG2024 - Davide Spada</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <!--
-    for most samples webgl-utils only provides shader compiling/linking and
-    canvas resizing because why clutter the examples with code that's the same in every sample.
-    See https://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
-    and https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
-    for webgl-utils, m3, m4, and webgl-lessons-ui.
-    -->
+    <div class="container">
+        <canvas id="canvas"></canvas>
+        <div class="commands">
+            <div class="commands-header">
+                <h2>Welcome to my garage</h2>
+                <h3>Davide Spada - CG 2024</h3>
+            </div>
+            <div class="commands-content">
+                <p><i class="fas fa-arrow-up"></i> <i class="fas fa-arrow-down"></i> <i class="fas fa-arrow-left"></i> <i class="fas fa-arrow-right"></i> Move the camera.</p>
+                <p>W, A, S, D: Translate the car.</p>
+                <p>Q, E, Z, C: Rotate the car.</p>
+                <p>R: Reset the car to its original position.</p>
+                <p><i class="fas fa-mouse"></i> Mouse moves the camera.</p>
+                <p><i class="fas fa-scroll"></i> Scroll wheel zooms.</p>
+                <p><i class="fas fa-hand-paper"></i> Touch can be used.</p>
+                <p><i class="fas fa-gamepad"></i> Gamepad controls:</p>
+                <ul>
+                    <li> Left stick: Translate the car.</li>
+                    <li> Right stick: Move the camera.</li>
+                    <li> Triggers: Zoom in and out.</li>
+                    <li> D-pad left/right: Rotate the car left/right.</li>
+                    <li> D-pad up/down: Rotate the car upwards/downwards.</li>
+                    <li> A or X button: Reset car position and rotation.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/06d84ce8cf.js" crossorigin="anonymous"></script>
     <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script type="text/javascript" src="res/dat.gui.js"></script>
     <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
-    <script src="https://webglfundamentals.org/webgl/resources/m3.js"></script>
-    <script type="module" src=src/main.js></script>
+    <script type="module" src="src/main.js"></script>
 </body>
 </html>

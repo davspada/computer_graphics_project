@@ -1,11 +1,9 @@
 export function parseOBJ(text) {
-	// because indices are base 1 let's just fill in the 0th data
 	const objPositions = [[0, 0, 0]];
 	const objTexcoords = [[0, 0]];
 	const objNormals = [[0, 0, 0]];
 	const objColors = [[0, 0, 0]];
 
-	// same order as `f` indices
 	const objVertexData = [
 		objPositions,
 		objTexcoords,
@@ -13,12 +11,11 @@ export function parseOBJ(text) {
 		objColors,
 	];
 
-	// same order as `f` indices
 	let webglVertexData = [
-		[],   // positions
-		[],   // texcoords
-		[],   // normals
-		[],   // colors
+		[],
+		[],
+		[],
+		[],
 	];
 
 	const materialLibs = [];
@@ -28,11 +25,9 @@ export function parseOBJ(text) {
 	let material = 'default';
 	let object = 'default';
 
-	const noop = () => { };
+	const noop = () => {};
 
 	function newGeometry() {
-		// If there is an existing geometry and it's
-		// not empty then start a new one.
 		if (geometry && geometry.data.position.length) {
 			geometry = undefined;
 		}
@@ -74,8 +69,6 @@ export function parseOBJ(text) {
 			const objIndex = parseInt(objIndexStr);
 			const index = objIndex + (objIndex >= 0 ? 0 : objVertexData[i].length);
 			webglVertexData[i].push(...objVertexData[i][index]);
-			// if this is the position index (index 0) and we parsed
-			// vertex colors then copy the vertex colors to the webgl vertex color data
 			if (i === 0 && objColors.length > 1) {
 				geometry.data.color.push(...objColors[index]);
 			}
@@ -84,7 +77,6 @@ export function parseOBJ(text) {
 
 	const keywords = {
 		v(parts) {
-			// if there are more than 3 values here they are vertex colors
 			if (parts.length > 3) {
 				objPositions.push(parts.slice(0, 3).map(parseFloat));
 				objColors.push(parts.slice(3).map(parseFloat));
@@ -96,7 +88,6 @@ export function parseOBJ(text) {
 			objNormals.push(parts.map(parseFloat));
 		},
 		vt(parts) {
-			// should check for missing v and extra w?
 			objTexcoords.push(parts.map(parseFloat));
 		},
 		f(parts) {
@@ -108,10 +99,8 @@ export function parseOBJ(text) {
 				addVertex(parts[tri + 2]);
 			}
 		},
-		s: noop,    // smoothing group
+		s: noop,
 		mtllib(parts, unparsedArgs) {
-			// the spec says there can be multiple filenames here
-			// but many exist with spaces in a single filename
 			materialLibs.push(unparsedArgs);
 		},
 		usemtl(parts, unparsedArgs) {
@@ -143,22 +132,21 @@ export function parseOBJ(text) {
 		const parts = line.split(/\s+/).slice(1);
 		const handler = keywords[keyword];
 		if (!handler) {
-			console.warn('unhandled keyword:', keyword);  // eslint-disable-line no-console
+			//console.warn('unhandled keyword:', keyword);
 			continue;
 		}
 
-		// controllo inserito per gestire modelli che fanno riferimento 
-		// a texture 3D (va a rimuovere la terza dimensione)
-		if (keyword === 'vt' && parts.length > 2)
+		if (keyword === 'vt' && parts.length > 2) {
 			parts.pop();
+		}
 
 		handler(parts, unparsedArgs);
 	}
 
-	// remove any arrays that have no entries.
 	for (const geometry of geometries) {
 		geometry.data = Object.fromEntries(
-			Object.entries(geometry.data).filter(([, array]) => array.length > 0));
+			Object.entries(geometry.data).filter(([, array]) => array.length > 0)
+		);
 	}
 
 	return {
@@ -168,7 +156,7 @@ export function parseOBJ(text) {
 }
 
 function parseMapArgs(unparsedArgs) {
-	// TODO: handle options
+	// TODO
 	return unparsedArgs;
 }
 
@@ -181,7 +169,6 @@ export function parseMTL(text) {
 			material = {};
 			materials[unparsedArgs] = material;
 		},
-		/* eslint brace-style:0 */
 		Ns(parts) { material.shininess = parseFloat(parts[0]); },
 		Ka(parts) { material.ambient = parts.map(parseFloat); },
 		Kd(parts) { material.diffuse = parts.map(parseFloat); },
@@ -210,7 +197,7 @@ export function parseMTL(text) {
 		const parts = line.split(/\s+/).slice(1);
 		const handler = keywords[keyword];
 		if (!handler) {
-			console.warn('unhandled keyword:', keyword);  // eslint-disable-line no-console
+			//console.warn('unhandled keyword:', keyword);
 			continue;
 		}
 		handler(parts, unparsedArgs);
